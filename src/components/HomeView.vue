@@ -1,5 +1,5 @@
 <template>
-  <main class="container my-4">
+  <main class="container my-4 p-0">
     <div>
       <h2 class="mt-5 mb-5 task">დავალებების გვერდი</h2>
     </div>
@@ -19,30 +19,56 @@
   </main>
 
   <section>
-    <div class="container">
+    <!-- სტატუსების ნავიგაცია -->
+    <div class="container p-0">
       <div class="d-flex justify-content-between">
         <button
           class="btn-status"
           v-for="(status, index) in statuses"
           :key="status.id"
-          :style="{ backgroundColor: colors[index], color: '#fff' }"
+          :style="{
+            backgroundColor: colors[index],
+            color: '#fff',
+          }"
         >
           {{ status.name }}
         </button>
       </div>
     </div>
-    <div class="container mt-5">
+    <!-- ქარდები -->
+    <div class="container mt-5 p-0">
       <div class="row">
         <div class="col-3">
           <div class="card">
             <div class="card-body">
-              <div>
-                <h5 class="card-title">დავალება 1</h5>
-                <h5 class="card-title">დავალება 1</h5>
-              </div>
+              <div class="d-flex justify-content-between">
+                <div class="d-flex">
+                  <div v-for="priority in priorities" :key="priority.id">
+                    <img
+                      :src="priority.icon"
+                      :alt="priority.name"
+                      class="priority-icon"
+                    />
+                    <p class="card-title">{{ priority.name }}</p>
+                  </div>
 
-              <p class="card-text">დავალების აღწერა</p>
-              <a href="#" class="btn btn-primary">დავალების ნახვა</a>
+                  <h5 class="card-title">დიზაინი</h5>
+                </div>
+                <div>
+                  <time class="card-title"> დეპარტამენტი </time>
+                </div>
+              </div>
+              <div>
+                <h4>Redberry-ს საიტის ლენდინგის დიზაინი</h4>
+                <p>
+                  შექმენი საიტის მთავარი გვერდი, რომელიც მოიცავს მთავარ
+                  სექციებს, ნავიგაციას.
+                </p>
+              </div>
+              <div class="d-flex justify-content-between">
+                <p>image</p>
+                <p>coments</p>
+              </div>
             </div>
           </div>
         </div>
@@ -58,6 +84,7 @@ import { ref, onMounted } from "vue";
 const statuses = ref([]);
 const colors = ["#F7BC30", "#FB5607", "#FF006E", "#3A86FF"];
 
+// სტატუსების მიღება
 const getStatuses = async () => {
   try {
     const response = await httprequest.getStatuses();
@@ -67,6 +94,8 @@ const getStatuses = async () => {
     console.error(error);
   }
 };
+
+// პრიორიტეტების request-ი
 const priorities = ref([]);
 const getPriorities = async () => {
   try {
@@ -77,6 +106,8 @@ const getPriorities = async () => {
     console.error(error);
   }
 };
+
+// დეპარტამენტების request-ი
 const departments = ref([]);
 const getDepartments = async () => {
   try {
@@ -136,5 +167,9 @@ li:hover {
   line-height: 100%;
   margin-right: 20px;
   width: 381px;
+}
+.priority-icon {
+  width: 24px;
+  height: 24px;
 }
 </style>

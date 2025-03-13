@@ -10,6 +10,9 @@ class HttpRequest {
     getDepartments(){
         return apiClient.get('/departments');
     }
+    getEmployees(){
+        return apiClient.get('/employees');
+    }
 }
 
 export default new HttpRequest();

@@ -3,7 +3,7 @@
     <h2 class="text-center fw-bold">შექმენი ახალი დავალება</h2>
   </div>
 
-  <form class="container form-container p-5">
+  <form @submit.prevent="submitForm" class="container form-container p-5">
     <div class="row mb-3 gap-5">
       <div class="col-md-5">
         <label class="form-label">სათაური*</label>
@@ -11,6 +11,8 @@
           type="text"
           class="form-control"
           placeholder="დავალების სახელი"
+          v-model="selectedName"
+          required
         />
         <p class="input-option">მინიმუმ ორი სიმბოლო</p>
         <p class="input-option">მაქსიმუმ 255 სიმბოლო</p>
@@ -43,21 +45,33 @@
           class="form-control"
           placeholder="დავალების აღწერა"
           rows="3"
+          v-model="selectedDescription"
         ></textarea>
         <p class="input-option">მინიმუმ ორი სიმბოლო</p>
         <p class="input-option">მაქსიმუმ 255 სიმბოლო</p>
       </div>
       <div class="col-md-5">
         <label class="form-label">პასუხისმგებელი თანამშრომელი*</label>
-        <input
-          type="text"
+        <select
+          name=""
+          id="priorities"
+          v-model="selectedemployees"
+          required
           class="form-control"
-          placeholder="დავალების სახელი"
-        />
+        >
+          <option
+            v-for="employee in employees"
+            :value="employee.id"
+            :key="employee.id"
+          >
+            {{ employee.name }} {{ employee.surname }}
+            <font-awesome-icon :icon="['fas', 'angle-down']" />
+          </option>
+        </select>
       </div>
     </div>
 
-    <div class="row mb-4 gap-5">
+    <div class="row mb-4 gap-5 mb-5 mt-5">
       <div class="col-md-2" style="margin-right: 30px">
         <label for="priorities" class="form-label">პრიორიტეტი*</label>
 
@@ -73,9 +87,10 @@
             :value="prioritie.id"
             :key="prioritie.id"
           >
-            {{ prioritie.name }} {{ prioritie.icon }}
-            <font-awesome-icon :icon="['fas', 'angle-down']" />
+            <img :src="prioritie.icon" alt="Icon" class="option-icon" />
+            {{ prioritie.name }}
           </option>
+          <font-awesome-icon :icon="['fas', 'angle-down']" />
         </select>
       </div>
       <div class="col-md-2" style="margin-right: 30px">
@@ -99,23 +114,25 @@
       </div>
       <div class="col-md-4">
         <label class="form-label">დედლაინი*</label>
-        <input type="date" class="form-control" />
+        <input type="date" v-model="selectedTime" class="form-control" />
       </div>
     </div>
 
     <div class="text-end">
-      <button type="submit" class="btn btn-primary save-btn">შენახვა</button>
+      <button type="submit" class="create-task">დავალების შექმნა</button>
     </div>
   </form>
 </template>
 
 <script setup>
 import httprequest from "../httprequests/HttpRequests";
+import apiClient from "./ApiClient";
 import { ref, onMounted } from "vue";
 
-const statuses = ref([]);
 const colors = ["#F7BC30", "#FB5607", "#FF006E", "#3A86FF"];
 
+//  სტატუსების get
+const statuses = ref([]);
 const getStatuses = async () => {
   try {
     const response = await httprequest.getStatuses();
@@ -125,6 +142,7 @@ const getStatuses = async () => {
     console.error(error);
   }
 };
+//  პრიორიტეტები get
 const priorities = ref([]);
 const getPriorities = async () => {
   try {
@@ -135,6 +153,19 @@ const getPriorities = async () => {
     console.error(error);
   }
 };
+// პასუხისმგებელი პირი get
+const employees = ref([]);
+
+const getEmployees = async () => {
+  try {
+    const response = await httprequest.getEmployees();
+    employees.value = response.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+// დეპარტამენტი get
 const departments = ref([]);
 
 const getDepartments = async () => {
@@ -147,14 +178,50 @@ const getDepartments = async () => {
     console.error(error);
   }
 };
+
+// submitform
+
+const selectedName = ref("");
+const selectedDescription = ref("");
 const selectedDepartment = ref("");
+const selectedemployees = ref("");
 const selectedPrioritie = ref("");
 const selectedStatuse = ref("");
+const selectedTime = ref("");
+
+const submitForm = async () => {
+  const requestData = {
+    name: selectedName.value,
+    description: selectedDescription.value,
+    due_date: selectedTime.value,
+    status_id: selectedStatuse.value,
+    priority_id: selectedPrioritie.value,
+    department: selectedDepartment.value,
+    employee_id: selectedemployees.value,
+  };
+  try {
+    const response = await apiClient.post("/tasks", requestData);
+    console.log(response.data);
+    clearForm();
+  } catch (error) {
+    console.error("Error:", error.response?.data || error.message);
+  }
+};
+const clearForm = () => {
+  selectedName.value = "";
+  selectedDescription.value = "";
+  selectedDepartment.value = "";
+  selectedemployees.value = "";
+  selectedPrioritie.value = "";
+  selectedStatuse.value = "";
+  selectedTime.value = "";
+};
 
 onMounted(() => {
   getStatuses();
   getPriorities();
   getDepartments();
+  getEmployees();
 });
 </script>
 <style>
@@ -175,5 +242,9 @@ onMounted(() => {
   padding: 10px 20px;
   font-size: 16px;
   font-weight: bold;
+}
+.option-icon {
+  width: 16px;
+  height: 18px;
 }
 </style>
