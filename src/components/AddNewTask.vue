@@ -137,7 +137,6 @@ const getStatuses = async () => {
   try {
     const response = await httprequest.getStatuses();
     statuses.value = response.data;
-    console.log(statuses.value);
   } catch (error) {
     console.error(error);
   }
@@ -148,14 +147,12 @@ const getPriorities = async () => {
   try {
     const response = await httprequest.getPriorities();
     priorities.value = response.data;
-    console.log(priorities.value);
   } catch (error) {
     console.error(error);
   }
 };
 // პასუხისმგებელი პირი get
 const employees = ref([]);
-
 const getEmployees = async () => {
   try {
     const response = await httprequest.getEmployees();
@@ -167,15 +164,24 @@ const getEmployees = async () => {
 
 // დეპარტამენტი get
 const departments = ref([]);
-
 const getDepartments = async () => {
   try {
     const response = await httprequest.getDepartments();
     departments.value = response.data;
-
-    console.log(departments.value);
   } catch (error) {
     console.error(error);
+  }
+};
+
+// ყველა task-ის წამოღება
+const tasks = ref([]);
+const getAllTasks = async () => {
+  try {
+    const response = await httprequest.getAllTasks();
+    tasks.value = response.data;
+    console.log(tasks.value);
+  } catch (error) {
+    console.log(error);
   }
 };
 
@@ -204,7 +210,7 @@ const submitForm = async () => {
     console.log(response.data);
     clearForm();
   } catch (error) {
-    console.error("Error:", error.response?.data || error.message);
+    console.error("Error:", error.response.data);
   }
 };
 const clearForm = () => {
@@ -222,6 +228,7 @@ onMounted(() => {
   getPriorities();
   getDepartments();
   getEmployees();
+  getAllTasks();
 });
 </script>
 <style>
@@ -238,11 +245,6 @@ onMounted(() => {
   margin-top: 2px;
 }
 
-.save-btn {
-  padding: 10px 20px;
-  font-size: 16px;
-  font-weight: bold;
-}
 .option-icon {
   width: 16px;
   height: 18px;

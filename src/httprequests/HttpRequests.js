@@ -13,6 +13,9 @@ class HttpRequest {
     getEmployees(){
         return apiClient.get('/employees');
     }
+    getAllTasks(){
+        return apiClient.get('/tasks')
+    }
 }
 
 export default new HttpRequest();

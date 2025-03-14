@@ -1,6 +1,6 @@
 <template>
-  <div class="container header">
-    <header class="row align-items-center py-3">
+  <div class="header">
+    <header class="row align-items-center py-3" style="margin-right: 18px">
       <div class="col-6 d-flex align-items-center gap-3">
         <router-link to="/" class="logo d-flex align-items-center gap-2">
           <img src="./assets/Momentum.png" alt="Momentum" />
@@ -30,6 +30,10 @@ const isModalVisible = ref(false);
 </script>
 
 <style>
+body {
+  max-width: 1600px;
+  margin: auto !important;
+}
 .header {
   background-color: #fff;
 }

@@ -1,5 +1,5 @@
 <template>
-  <main class="container my-4 p-0">
+  <main class="my-4 p-0">
     <div>
       <h2 class="mt-5 mb-5 task">დავალებების გვერდი</h2>
     </div>
@@ -20,12 +20,13 @@
 
   <section>
     <!-- სტატუსების ნავიგაცია -->
-    <div class="container p-0">
-      <div class="d-flex justify-content-between">
+    <div class="p-0">
+      <div class="d-flex flex-wrap">
         <button
           class="btn-status"
           v-for="(status, index) in statuses"
           :key="status.id"
+          style="width: 381px; margin-right: 18px"
           :style="{
             backgroundColor: colors[index],
             color: '#fff',
@@ -36,38 +37,102 @@
       </div>
     </div>
     <!-- ქარდები -->
-    <div class="container mt-5 p-0">
-      <div class="row">
-        <div class="col-3">
-          <div class="card">
-            <div class="card-body">
-              <div class="d-flex justify-content-between">
+    <div class="mt-5 p-0">
+      <div class="row" style="padding: 0">
+        <div
+          class="col-3 mb-3"
+          style="height: 217px; width: 381px; margin-right: 18px"
+          v-for="(task, index) in tasks"
+          :key="task.id"
+        >
+          <div
+            class="card"
+            style="
+              width: 381px;
+              display: flex;
+              flex-direction: column;
+
+              gap: 28px;
+            "
+            :style="{ border: '2px solid ' + colors[index % colors.length] }"
+          >
+            <div class="card-body d-flex flex-column">
+              <div
+                class="d-flex align-items-center mb-2 justify-content-between"
+              >
                 <div class="d-flex">
-                  <div v-for="priority in priorities" :key="priority.id">
+                  <!-- პრიორიტეტის ბლოკი -->
+                  <div
+                    class="priority-badge"
+                    :style="{
+                      borderColor: getPriorityColor(task.priority.id),
+                    }"
+                  >
                     <img
-                      :src="priority.icon"
-                      :alt="priority.name"
-                      class="priority-icon"
+                      :src="task.priority.icon"
+                      :alt="task.priority.name"
+                      class="me-1"
+                      style="width: 12px; height: 9px"
                     />
-                    <p class="card-title">{{ priority.name }}</p>
+                    <p
+                      class="mb-0 small"
+                      :style="{ color: getPriorityColor(task.priority.id) }"
+                    >
+                      {{ task.priority.name }}
+                    </p>
                   </div>
 
-                  <h5 class="card-title">დიზაინი</h5>
+                  <!-- დეპარტამენტის ბლოკი -->
+                  <p
+                    class="department-badge"
+                    :style="{
+                      backgroundColor: getStatusColor(task.status.id),
+                    }"
+                  >
+                    {{ task.department.name.split(" ")[0] }}
+                  </p>
                 </div>
+
                 <div>
-                  <time class="card-title"> დეპარტამენტი </time>
+                  <time class="cardtitle">{{ formatDate(task.due_date) }}</time>
                 </div>
               </div>
               <div>
-                <h4>Redberry-ს საიტის ლენდინგის დიზაინი</h4>
-                <p>
-                  შექმენი საიტის მთავარი გვერდი, რომელიც მოიცავს მთავარ
-                  სექციებს, ნავიგაციას.
+                <h4
+                  style="
+                    font-family: FiraGO;
+                    font-size: 15px;
+                    font-style: normal;
+                    font-weight: 500;
+                    line-height: normal;
+                  "
+                >
+                  {{ task.name }}
+                </h4>
+                <p
+                  style="
+                    font-family: FiraGO;
+                    font-size: 14px;
+                    font-style: normal;
+                    font-weight: 400;
+                    line-height: normal;
+                  "
+                >
+                  {{ task.description }}
                 </p>
               </div>
-              <div class="d-flex justify-content-between">
-                <p>image</p>
-                <p>coments</p>
+              <div
+                class="d-flex justify-content-between align-items-center mt-auto"
+              >
+                <img
+                  :src="task.employee.avatar"
+                  alt="icon"
+                  style="width: 31px; height: 31px; border-radius: 100px"
+                />
+
+                <div>
+                  <img :src="comments" alt="comments" class="comments-icon" />
+                </div>
               </div>
             </div>
           </div>
@@ -80,16 +145,33 @@
 <script setup>
 import httprequest from "../httprequests/HttpRequests";
 import { ref, onMounted } from "vue";
+import comments from "../assets/Comments.png";
 
 const statuses = ref([]);
 const colors = ["#F7BC30", "#FB5607", "#FF006E", "#3A86FF"];
+const color = ["#FA4D4D", "#08A508", "#FFBE0B"];
 
+const getStatusColor = (statusId) => {
+  return colors[statusId % colors.length];
+};
+
+const getPriorityColor = (priorityId) => {
+  return color[priorityId % color.length];
+};
+
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  return new Intl.DateTimeFormat("ka-GE", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  }).format(date);
+};
 // სტატუსების მიღება
 const getStatuses = async () => {
   try {
     const response = await httprequest.getStatuses();
     statuses.value = response.data;
-    console.log(statuses.value);
   } catch (error) {
     console.error(error);
   }
@@ -101,7 +183,6 @@ const getPriorities = async () => {
   try {
     const response = await httprequest.getPriorities();
     priorities.value = response.data;
-    console.log(priorities.value);
   } catch (error) {
     console.error(error);
   }
@@ -113,13 +194,25 @@ const getDepartments = async () => {
   try {
     const response = await httprequest.getDepartments();
     departments.value = response.data;
-    console.log(departments.value);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+// ყველა  task
+const tasks = ref([]);
+const getAllTasks = async () => {
+  try {
+    const response = await httprequest.getAllTasks();
+    tasks.value = response.data;
+    console.log(tasks.value);
   } catch (error) {
     console.error(error);
   }
 };
 
 onMounted(() => {
+  getAllTasks();
   getStatuses();
   getPriorities();
   getDepartments();
@@ -155,6 +248,9 @@ li:hover {
   line-height: 100%;
   letter-spacing: 0%;
 }
+p {
+  margin: 0;
+}
 
 .btn-status {
   background-color: #8338ec;
@@ -162,14 +258,58 @@ li:hover {
   border: none;
   border-radius: 10px;
   padding: 15px;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 500;
   line-height: 100%;
-  margin-right: 20px;
-  width: 381px;
+  width: 100%;
+  max-width: 381px;
+  text-align: center;
 }
-.priority-icon {
-  width: 24px;
-  height: 24px;
+.card {
+  height: 100%;
+  width: 100%;
+  max-width: 381px;
+  border-radius: 8px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.priority-badge {
+  display: flex;
+  align-items: center;
+  border: 0.5px solid;
+  border-radius: 4px;
+  height: 26px;
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+.department-badge {
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 10px;
+  padding: 4px 10px;
+  color: white;
+  margin-left: 10px;
+}
+
+.avatar {
+  width: 31px;
+  height: 31px;
+  border-radius: 50%;
+}
+
+.comments-icon {
+  width: 22px;
+  height: 22px;
+}
+.cardtitle {
+  font-family: FiraGO;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
 }
 </style>

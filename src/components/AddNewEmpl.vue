@@ -163,8 +163,8 @@ const previewImage = ref(defaultImage);
 const uploadFile = (event) => {
   const uploadedFile = event.target.files[0];
   if (uploadedFile) {
-    file.value = uploadedFile; // ატვირთული ფაილი შენახულია
-    previewImage.value = URL.createObjectURL(uploadedFile); // გახსენება სურათის
+    file.value = uploadedFile;
+    previewImage.value = URL.createObjectURL(uploadedFile);
   }
 };
 
