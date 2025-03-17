@@ -1,7 +1,7 @@
 <template>
   <section class="task-detail col-12">
     <div class="container d-flex justify-content-between">
-      <div class="row col-5">
+      <div class="col-5">
         <div class="d-flex justify-content-between">
           <div class="">
             <div class="d-flex flex-column">
@@ -144,12 +144,62 @@
           </div>
         </div>
       </div>
-      <div class="row col-6">
-        <div class="d-flex justify-content-between">
-          <div class="">
-            <div class="d-flex flex-column">
-              <div class="d-flex justify-content-between">
-                <h2>fsdfs</h2>
+      <div class="col-6">
+        <div class="">
+          <div
+            class="p-3 mt-5 rounded border"
+            style="background-color: #f8f3fea6; border-color: #ddd2ff"
+          >
+            <form @submit.prevent="submitForm" class="w-100">
+              <div class="position-relative">
+                <textarea
+                  v-model="comments"
+                  class="form-control"
+                  name="comments"
+                  id="comments"
+                  placeholder="დაწერე კომენტარი"
+                  style="height: 100px; padding-right: 60px; resize: none"
+                ></textarea>
+                <button
+                  type="submit"
+                  class="create-task position-absolute"
+                  style="
+                    width: 155px;
+                    height: 35px;
+                    bottom: 10px;
+                    right: 10px;
+                    height: 35px;
+                    padding: 8px 20px;
+                    border-radius: 20px;
+                    gap: 10px;
+                  "
+                >
+                  გაგზავნა
+                </button>
+              </div>
+            </form>
+
+            <div>
+              <div class="comments-section">
+                <h4>კომენტარები</h4>
+
+                <div
+                  v-for="comment in comments"
+                  :key="comment.id"
+                  class="comment"
+                >
+                  <div class="d-flex align-items-center">
+                    <img
+                      :src="comment.author_avatar"
+                      :alt="comment.author_nickname"
+                      class="avatar"
+                    />
+                    <div class="ms-2">
+                      <strong>{{ comment.author_nickname }}</strong>
+                      <p>{{ comment.text }}</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -166,14 +216,40 @@ import { useRoute } from "vue-router";
 import user from "../assets/user.png";
 import time from "../assets/time.png";
 import statusi from "../assets/statusi.png";
+import apiClient from "./apiClient";
 
 const statuses = ref([]);
 const selectedStatus = ref(null);
 const task = ref(null);
 const route = useRoute();
+const comments = ref("");
+const taskid = route.params.id;
+
 const colors = ["#F7BC30", "#FB5607", "#FF006E", "#3A86FF"];
 const color = ["#FA4D4D", "#08A508", "#FFBE0B"];
 
+// კომენტარის გაგზავნის ფუნქცია
+const submitForm = async () => {
+  if (!comments.value) return;
+
+  const formData = new FormData();
+  formData.append("text", comments.value);
+  try {
+    const response = await apiClient.post(
+      `/tasks/${taskid}/comments`,
+      formData
+    );
+    console.log(response);
+    clearForm();
+  } catch (error) {
+    console.log(error);
+  }
+};
+const clearForm = () => {
+  comments.value = "";
+};
+
+// სტატუსების მიღების ფუნქცია
 const getStatuses = async () => {
   try {
     const response = await httprequest.getStatuses();
@@ -185,18 +261,34 @@ const getStatuses = async () => {
     console.log(error);
   }
 };
+// კომენტარების მიღების ფუნქცია
+const getAllComments = async () => {
+  if (!task.value || !task.value.id) {
+    console.error("Task is not loaded yet");
+    return;
+  }
+  try {
+    const response = await apiClient.get(`/tasks/${task.value.id}/comments`);
+    comments.value = response.data;
+  } catch (error) {
+    console.error("Error fetching comments:", error);
+  }
+};
 
+// სტატუსების ფერის შეცვლის ფუნქცია1
 const getStatusColor = (statusId) => {
   return colors[statusId % colors.length];
 };
 
+// პრიორიტეტების ფერის შეცვლის ფუნქცია
 const getPriorityColor = (priorityId) => {
   return color[priorityId % color.length];
 };
 
-const getTask = async () => {
+// ტასკების მიღების ფუნქცია
+const getTask = async (taskid) => {
   try {
-    const response = await httprequest.getTask(route.params.id);
+    const response = await httprequest.getTask(taskid);
     task.value = response.data;
     selectedStatus.value = task.value.status.id;
   } catch (error) {
@@ -204,6 +296,7 @@ const getTask = async () => {
   }
 };
 
+// თარიღის ფორმატირება
 const formatDate = (dateString) => {
   const date = new Date(dateString);
   return new Intl.DateTimeFormat("ka-GE", {
@@ -213,14 +306,32 @@ const formatDate = (dateString) => {
   }).format(date);
 };
 
-onMounted(() => {
-  const taskid = route.params.id;
-  getTask(taskid);
+onMounted(async () => {
+  await getTask(route.params.id); // დაველოდოთ `task`-ის ჩატვირთვას
   getStatuses();
+  getAllComments(); // ✅ აღარ სჭირდება `taskid`, რადგან `task.value.id` უკვე განახლდა
 });
 </script>
 
 <style>
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #ddd;
+}
+
+.comments-section {
+  margin-top: 20px;
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.comment {
+  padding: 10px;
+  border-bottom: 1px solid #e0e0e0;
+}
 .task-detail {
   display: inline-flex;
   flex-direction: column;

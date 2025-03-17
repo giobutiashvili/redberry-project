@@ -1,4 +1,5 @@
 import apiClient from "../components/ApiClient";
+import task from "../components/taskDetail.vue"
 
 class HttpRequest {
     getStatuses(){
@@ -18,6 +19,13 @@ class HttpRequest {
     }
     getTask(id){
         return apiClient.get(`/tasks/${id}`)
+    }
+    getAllComments() {
+        if (!task.value || !task.value.id) {
+            console.error("Task is not loaded yet");
+            return;
+        }
+        return apiClient.get(`/tasks/${task.value.id}/comments`);
     }
 }
 
