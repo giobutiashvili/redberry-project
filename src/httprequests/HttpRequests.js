@@ -16,6 +16,9 @@ class HttpRequest {
     getAllTasks(){
         return apiClient.get('/tasks')
     }
+    getTask(id){
+        return apiClient.get(`/tasks/${id}`)
+    }
 }
 
 export default new HttpRequest();

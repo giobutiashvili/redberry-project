@@ -1,6 +1,6 @@
 <template>
   <div class="header">
-    <header class="row align-items-center py-3" style="margin-right: 18px">
+    <header class="row align-items-center py-3 mb-3" style="margin-right: 18px">
       <div class="col-6 d-flex align-items-center gap-3">
         <router-link to="/" class="logo d-flex align-items-center gap-2">
           <img src="./assets/Momentum.png" alt="Momentum" />
@@ -118,5 +118,8 @@ body {
   line-height: 16.8px;
   font-weight: 400;
   color: #021526;
+}
+a {
+  text-decoration: none !important;
 }
 </style>

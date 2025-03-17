@@ -13,6 +13,11 @@ const routes = [
         path:'/addnewtask',
         name:'addnewtask',
         component:() => import('../components/AddNewTask.vue')
+    },
+    {
+        path:'/taskDetail/:id',
+        name:'taskDetail',
+        component:() => import('../components/taskDetail.vue')
     }
 ];
 

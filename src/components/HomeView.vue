@@ -45,97 +45,101 @@
           v-for="(task, index) in tasks"
           :key="task.id"
         >
-          <div
-            class="card"
-            style="
-              width: 381px;
-              display: flex;
-              flex-direction: column;
+          <router-link :to="{ name: 'taskDetail', params: { id: task.id } }">
+            <div
+              class="card"
+              style="
+                width: 381px;
+                display: flex;
+                flex-direction: column;
 
-              gap: 28px;
-            "
-            :style="{ border: '2px solid ' + colors[index % colors.length] }"
-          >
-            <div class="card-body d-flex flex-column">
-              <div
-                class="d-flex align-items-center mb-2 justify-content-between"
-              >
-                <div class="d-flex">
-                  <!-- პრიორიტეტის ბლოკი -->
-                  <div
-                    class="priority-badge"
-                    :style="{
-                      borderColor: getPriorityColor(task.priority.id),
-                    }"
-                  >
-                    <img
-                      :src="task.priority.icon"
-                      :alt="task.priority.name"
-                      class="me-1"
-                      style="width: 12px; height: 9px"
-                    />
-                    <p
-                      class="mb-0 small"
-                      :style="{ color: getPriorityColor(task.priority.id) }"
+                gap: 28px;
+              "
+              :style="{ border: '2px solid ' + colors[index % colors.length] }"
+            >
+              <div class="card-body d-flex flex-column">
+                <div
+                  class="d-flex align-items-center mb-2 justify-content-between"
+                >
+                  <div class="d-flex">
+                    <!-- პრიორიტეტის ბლოკი -->
+                    <div
+                      class="priority-badge"
+                      :style="{
+                        borderColor: getPriorityColor(task.priority.id),
+                      }"
                     >
-                      {{ task.priority.name }}
+                      <img
+                        :src="task.priority.icon"
+                        :alt="task.priority.name"
+                        class="me-1"
+                        style="width: 12px; height: 9px"
+                      />
+                      <p
+                        class="mb-0 small"
+                        :style="{ color: getPriorityColor(task.priority.id) }"
+                      >
+                        {{ task.priority.name }}
+                      </p>
+                    </div>
+
+                    <!-- დეპარტამენტის ბლოკი -->
+                    <p
+                      class="department-badge"
+                      :style="{
+                        backgroundColor: getStatusColor(task.status.id),
+                      }"
+                    >
+                      {{ task.department.name.split(" ")[0] }}
                     </p>
                   </div>
 
-                  <!-- დეპარტამენტის ბლოკი -->
-                  <p
-                    class="department-badge"
-                    :style="{
-                      backgroundColor: getStatusColor(task.status.id),
-                    }"
+                  <div>
+                    <time class="cardtitle">{{
+                      formatDate(task.due_date)
+                    }}</time>
+                  </div>
+                </div>
+                <div>
+                  <h4
+                    style="
+                      font-family: FiraGO;
+                      font-size: 15px;
+                      font-style: normal;
+                      font-weight: 500;
+                      line-height: normal;
+                    "
                   >
-                    {{ task.department.name.split(" ")[0] }}
+                    {{ task.name }}
+                  </h4>
+                  <p
+                    style="
+                      font-family: FiraGO;
+                      font-size: 14px;
+                      font-style: normal;
+                      font-weight: 400;
+                      line-height: normal;
+                    "
+                  >
+                    {{ task.description }}
                   </p>
                 </div>
-
-                <div>
-                  <time class="cardtitle">{{ formatDate(task.due_date) }}</time>
-                </div>
-              </div>
-              <div>
-                <h4
-                  style="
-                    font-family: FiraGO;
-                    font-size: 15px;
-                    font-style: normal;
-                    font-weight: 500;
-                    line-height: normal;
-                  "
+                <div
+                  class="d-flex justify-content-between align-items-center mt-auto"
                 >
-                  {{ task.name }}
-                </h4>
-                <p
-                  style="
-                    font-family: FiraGO;
-                    font-size: 14px;
-                    font-style: normal;
-                    font-weight: 400;
-                    line-height: normal;
-                  "
-                >
-                  {{ task.description }}
-                </p>
-              </div>
-              <div
-                class="d-flex justify-content-between align-items-center mt-auto"
-              >
-                <img
-                  :src="task.employee.avatar"
-                  alt="icon"
-                  style="width: 31px; height: 31px; border-radius: 100px"
-                />
+                  <img
+                    :src="task.employee.avatar"
+                    alt="icon"
+                    style="width: 31px; height: 31px; border-radius: 100px"
+                  />
 
-                <div>
-                  <img :src="comments" alt="comments" class="comments-icon" />
+                  <div>
+                    <img :src="comments" alt="comments" class="comments-icon" />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          </router-link>
         </div>
       </div>
     </div>
@@ -240,6 +244,7 @@ li:hover {
   cursor: pointer;
   color: #8338ec;
 }
+
 .task {
   color: #212529;
   font-family: "Fira Go", sans-serif;
