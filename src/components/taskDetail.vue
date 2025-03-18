@@ -153,10 +153,8 @@
             <form @submit.prevent="submitForm" class="w-100">
               <div class="position-relative">
                 <textarea
-                  v-model="comments"
+                  v-model="newComment"
                   class="form-control"
-                  name="comments"
-                  id="comments"
                   placeholder="დაწერე კომენტარი"
                   style="height: 100px; padding-right: 60px; resize: none"
                 ></textarea>
@@ -181,7 +179,7 @@
 
             <div>
               <div class="comments-section">
-                <h4>კომენტარები</h4>
+                <h4>კომენტარები {{ comments.length }}</h4>
 
                 <div
                   v-for="comment in comments"
@@ -196,7 +194,9 @@
                     />
                     <div class="ms-2">
                       <strong>{{ comment.author_nickname }}</strong>
-                      <p>{{ comment.text }}</p>
+                      <p>
+                        {{ comment.text }}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -223,6 +223,7 @@ const selectedStatus = ref(null);
 const task = ref(null);
 const route = useRoute();
 const comments = ref("");
+const newComment = ref("");
 const taskid = route.params.id;
 
 const colors = ["#F7BC30", "#FB5607", "#FF006E", "#3A86FF"];
@@ -230,15 +231,16 @@ const color = ["#FA4D4D", "#08A508", "#FFBE0B"];
 
 // კომენტარის გაგზავნის ფუნქცია
 const submitForm = async () => {
-  if (!comments.value) return;
+  if (!newComment.value.trim()) return;
 
   const formData = new FormData();
-  formData.append("text", comments.value);
+  formData.append("text", newComment.value);
   try {
     const response = await apiClient.post(
       `/tasks/${taskid}/comments`,
       formData
     );
+    comments.value.unshift(response.data);
     console.log(response);
     clearForm();
   } catch (error) {
@@ -246,7 +248,7 @@ const submitForm = async () => {
   }
 };
 const clearForm = () => {
-  comments.value = "";
+  newComment.value = "";
 };
 
 // სტატუსების მიღების ფუნქცია
@@ -263,13 +265,10 @@ const getStatuses = async () => {
 };
 // კომენტარების მიღების ფუნქცია
 const getAllComments = async () => {
-  if (!task.value || !task.value.id) {
-    console.error("Task is not loaded yet");
-    return;
-  }
   try {
-    const response = await apiClient.get(`/tasks/${task.value.id}/comments`);
+    const response = await apiClient.get(`/tasks/${taskid}/comments`);
     comments.value = response.data;
+    console.log(comments.value, "komentarebia");
   } catch (error) {
     console.error("Error fetching comments:", error);
   }
@@ -307,9 +306,9 @@ const formatDate = (dateString) => {
 };
 
 onMounted(async () => {
-  await getTask(route.params.id); // დაველოდოთ `task`-ის ჩატვირთვას
+  await getTask(route.params.id);
   getStatuses();
-  getAllComments(); // ✅ აღარ სჭირდება `taskid`, რადგან `task.value.id` უკვე განახლდა
+  getAllComments();
 });
 </script>
 

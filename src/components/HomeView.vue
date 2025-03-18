@@ -52,10 +52,10 @@
                 width: 381px;
                 display: flex;
                 flex-direction: column;
-
+                border-radius: 15px;
                 gap: 28px;
               "
-              :style="{ border: '2px solid ' + colors[index % colors.length] }"
+              :style="{ border: '1px solid ' + colors[index % colors.length] }"
             >
               <div class="card-body d-flex flex-column">
                 <div
@@ -134,7 +134,11 @@
                   />
 
                   <div>
-                    <img :src="comments" alt="comments" class="comments-icon" />
+                    <img
+                      :src="commentsimg"
+                      alt="comments"
+                      class="comments-icon"
+                    />
                   </div>
                 </div>
               </div>
@@ -149,7 +153,7 @@
 <script setup>
 import httprequest from "../httprequests/HttpRequests";
 import { ref, onMounted } from "vue";
-import comments from "../assets/Comments.png";
+import commentsimg from "../assets/Comments.png";
 
 const statuses = ref([]);
 const colors = ["#F7BC30", "#FB5607", "#FF006E", "#3A86FF"];
@@ -180,6 +184,7 @@ const getStatuses = async () => {
     console.error(error);
   }
 };
+// კომენტარების მიღება
 
 // პრიორიტეტების request-ი
 const priorities = ref([]);
@@ -205,6 +210,7 @@ const getDepartments = async () => {
 
 // ყველა  task
 const tasks = ref([]);
+
 const getAllTasks = async () => {
   try {
     const response = await httprequest.getAllTasks();

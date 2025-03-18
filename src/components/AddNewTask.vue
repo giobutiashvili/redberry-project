@@ -52,22 +52,41 @@
       </div>
       <div class="col-md-5">
         <label class="form-label">პასუხისმგებელი თანამშრომელი*</label>
-        <select
-          name=""
-          id="priorities"
-          v-model="selectedemployees"
-          required
-          class="form-control"
-        >
-          <option
-            v-for="employee in employees"
-            :value="employee.id"
-            :key="employee.id"
+
+        <div class="custom-select">
+          <div
+            class="form-control d-flex align-items-center justify-content-between"
+            @click="showDropdownEmploy = !showDropdownEmploy"
           >
-            {{ employee.name }} {{ employee.surname }}
+            <div class="d-flex align-items-center gap-2">
+              <div>
+                <img
+                  style="width: 30px; height: 30px; border-radius: 50%"
+                  v-if="selectedemployees"
+                  :src="
+                    employees.find((p) => p.id === selectedemployees)?.avatar
+                  "
+                  class="option-icon"
+                />
+              </div>
+              <p class="mb-0">{{ selectedEmployeeFullName }}</p>
+            </div>
+
             <font-awesome-icon :icon="['fas', 'angle-down']" />
-          </option>
-        </select>
+          </div>
+
+          <div v-if="showDropdownEmploy" class="dropdown">
+            <div
+              v-for="employee in employees"
+              :key="employee.id"
+              class="dropdown-item"
+              @click="selectemployee(employee)"
+            >
+              <img :src="employee.avatar" class="option-icon" />
+              {{ employee.name }} {{ employee.surname }}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -75,23 +94,37 @@
       <div class="col-md-2" style="margin-right: 30px">
         <label for="priorities" class="form-label">პრიორიტეტი*</label>
 
-        <select
-          name=""
-          id="priorities"
-          v-model="selectedPrioritie"
-          required
-          class="form-control"
-        >
-          <option
-            v-for="prioritie in priorities"
-            :value="prioritie.id"
-            :key="prioritie.id"
+        <div class="custom-select">
+          <div
+            class="form-control d-flex align-items-center justify-content-between"
+            @click="showDropdown = !showDropdown"
           >
-            <img :src="prioritie.icon" alt="Icon" class="option-icon" />
-            {{ prioritie.name }}
-          </option>
-          <font-awesome-icon :icon="['fas', 'angle-down']" />
-        </select>
+            <div>
+              <img
+                v-if="selectedPrioritie"
+                :src="priorities.find((p) => p.id === selectedPrioritie)?.icon"
+                class="option-icon"
+              />
+              {{
+                priorities.find((p) => p.id === selectedPrioritie)?.name || ""
+              }}
+            </div>
+
+            <font-awesome-icon :icon="['fas', 'angle-down']" />
+          </div>
+
+          <div v-if="showDropdown" class="dropdown">
+            <div
+              v-for="priority in priorities"
+              :key="priority.id"
+              class="dropdown-item"
+              @click="selectPriority(priority)"
+            >
+              <img :src="priority.icon" class="option-icon" />
+              {{ priority.name }}
+            </div>
+          </div>
+        </div>
       </div>
       <div class="col-md-2" style="margin-right: 30px">
         <label class="form-label">სტატუსი* </label>
@@ -107,8 +140,7 @@
             :value="statuse.id"
             :key="statuse.id"
           >
-            {{ statuse.name
-            }}<font-awesome-icon :icon="['fas', 'angle-down']" />
+            {{ statuse.name }}
           </option>
         </select>
       </div>
@@ -127,9 +159,7 @@
 <script setup>
 import httprequest from "../httprequests/HttpRequests";
 import apiClient from "./ApiClient";
-import { ref, onMounted } from "vue";
-
-const colors = ["#F7BC30", "#FB5607", "#FF006E", "#3A86FF"];
+import { ref, onMounted, computed } from "vue";
 
 //  სტატუსების get
 const statuses = ref([]);
@@ -137,30 +167,65 @@ const getStatuses = async () => {
   try {
     const response = await httprequest.getStatuses();
     statuses.value = response.data;
+    if (statuses.value.length > 0) {
+      selectedStatuse.value = statuses.value[0].id;
+    }
   } catch (error) {
     console.error(error);
   }
 };
+
 //  პრიორიტეტები get
 const priorities = ref([]);
+const showDropdown = ref(false);
 const getPriorities = async () => {
   try {
     const response = await httprequest.getPriorities();
-    priorities.value = response.data;
+    const data = response.data;
+    priorities.value = data;
+
+    if (data.length > 0) {
+      selectedPrioritie.value = data[0].id;
+    }
   } catch (error) {
     console.error(error);
   }
 };
+// პრიორიტეტების  არჩევის ფუნქცია
+const selectPriority = (priority) => {
+  selectedPrioritie.value = priority.id;
+  showDropdown.value = false; //
+};
+
 // პასუხისმგებელი პირი get
+const selectedemployees = ref("");
 const employees = ref([]);
+const showDropdownEmploy = ref(false);
+
 const getEmployees = async () => {
   try {
     const response = await httprequest.getEmployees();
-    employees.value = response.data;
+    const data = response.data;
+    employees.value = data;
+    if (data.length > 0) {
+      selectedemployees.value = data[0].id;
+    }
   } catch (error) {
     console.log(error);
   }
 };
+
+const selectemployee = (employee) => {
+  selectedemployees.value = employee.id;
+  showDropdownEmploy.value = false;
+};
+
+const selectedEmployeeFullName = computed(() => {
+  const employee = employees.value.find(
+    (p) => p.id === selectedemployees.value
+  );
+  return employee ? `${employee.name} ${employee.surname}` : "";
+});
 
 // დეპარტამენტი get
 const departments = ref([]);
@@ -168,6 +233,9 @@ const getDepartments = async () => {
   try {
     const response = await httprequest.getDepartments();
     departments.value = response.data;
+    if (departments.value.length > 0) {
+      selectedDepartment.value = departments.value[0].id;
+    }
   } catch (error) {
     console.error(error);
   }
@@ -190,7 +258,7 @@ const getAllTasks = async () => {
 const selectedName = ref("");
 const selectedDescription = ref("");
 const selectedDepartment = ref("");
-const selectedemployees = ref("");
+
 const selectedPrioritie = ref("");
 const selectedStatuse = ref("");
 const selectedTime = ref("");
@@ -248,5 +316,44 @@ onMounted(() => {
 .option-icon {
   width: 16px;
   height: 18px;
+}
+.custom-select {
+  position: relative;
+  width: 200px;
+  cursor: pointer;
+}
+
+.selected img {
+  width: 18px;
+  height: 16px;
+}
+
+.dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background: #f1f1f1;
+}
+
+.dropdown-item img {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
 }
 </style>
