@@ -23,22 +23,35 @@
       </div>
       <div class="col-md-5">
         <label class="form-label">დეპარტამენტი*</label>
-        <select
-          name=""
-          id="department"
-          v-model="selectedDepartment"
-          required
-          class="form-control"
-        >
-          <option
-            v-for="department in departments"
-            :value="department.id"
-            :key="department.id"
+
+        <div class="custom-select" style="width: 100%">
+          <div
+            class="form-control d-flex align-items-center justify-content-between"
+            @click="showDropdownDepartment = !showDropdownDepartment"
           >
-            {{ department.name }}
-            <font-awesome-icon :icon="['fas', 'angle-down']" />
-          </option>
-        </select>
+            <div>
+              {{
+                departments.find((p) => p.id === selectedDepartment)?.name || ""
+              }}
+            </div>
+
+            <font-awesome-icon
+              :icon="['fas', 'angle-down']"
+              :class="{ 'rotate-180': showDropdownDepartment }"
+            />
+          </div>
+
+          <div v-if="showDropdownDepartment" class="dropdown">
+            <div
+              v-for="department in departments"
+              :key="department.id"
+              class="dropdown-item"
+              @click="selectDepartment(department)"
+            >
+              {{ department.name }}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -99,7 +112,11 @@
               class="dropdown-item"
               @click="selectemployee(employee)"
             >
-              <img :src="employee.avatar" class="option-icon" />
+              <img
+                :src="employee.avatar"
+                class="option-icon"
+                style="width: 30px; height: 30px; border-radius: 50%"
+              />
               {{ employee.name }} {{ employee.surname }}
             </div>
           </div>
@@ -148,21 +165,33 @@
       </div>
       <div class="col-md-2" style="margin-right: 30px">
         <label class="form-label">სტატუსი* </label>
-        <select
-          name=""
-          id="statuse"
-          v-model="selectedStatuse"
-          required
-          class="form-control"
-        >
-          <option
-            v-for="statuse in statuses"
-            :value="statuse.id"
-            :key="statuse.id"
+
+        <div class="custom-select" style="width: 240px">
+          <div
+            class="form-control d-flex align-items-center justify-content-between"
+            @click="showDropdownStatuses = !showDropdownStatuses"
           >
-            {{ statuse.name }}
-          </option>
-        </select>
+            <div>
+              {{ statuses.find((p) => p.id === selectedStatuse)?.name || "" }}
+            </div>
+
+            <font-awesome-icon
+              :icon="['fas', 'angle-down']"
+              :class="{ 'rotate-180': showDropdownStatuses }"
+            />
+          </div>
+
+          <div v-if="showDropdownStatuses" class="dropdown">
+            <div
+              v-for="statuse in statuses"
+              :key="statuse.id"
+              class="dropdown-item"
+              @click="selectStatuses(statuse)"
+            >
+              {{ statuse.name }}
+            </div>
+          </div>
+        </div>
       </div>
       <div class="col-md-4">
         <label class="form-label">დედლაინი*</label>
@@ -185,6 +214,11 @@ import { ref, onMounted, computed } from "vue";
 
 //  სტატუსების get
 const statuses = ref([]);
+const showDropdownStatuses = ref(false);
+const selectStatuses = (status) => {
+  selectedStatuse.value = status.id;
+  showDropdownStatuses.value = false;
+};
 const getStatuses = async () => {
   try {
     const response = await httprequest.getStatuses();
@@ -248,6 +282,8 @@ const selectedEmployeeFullName = computed(() => {
 });
 
 // დეპარტამენტი get
+const selectedDepartment = ref("");
+const showDropdownDepartment = ref(false);
 const departments = ref([]);
 const getDepartments = async () => {
   try {
@@ -259,6 +295,10 @@ const getDepartments = async () => {
   } catch (error) {
     console.error(error);
   }
+};
+const selectDepartment = (department) => {
+  selectedDepartment.value = department.id;
+  showDropdownDepartment.value = false;
 };
 
 // ყველა task-ის წამოღება
@@ -277,7 +317,6 @@ const getAllTasks = async () => {
 
 const selectedName = ref("");
 const selectedDescription = ref("");
-const selectedDepartment = ref("");
 
 const selectedPrioritie = ref("");
 const selectedStatuse = ref("");
@@ -318,9 +357,11 @@ onMounted(() => {
   getEmployees();
   getAllTasks();
 });
+
 const getColor = (text) => {
   return text.length >= 2 && text.length <= 255 ? "#08A508" : "#FA4D4D";
 };
+
 const isValidInput = computed(() => {
   return (
     selectedName.value.length >= 2 &&

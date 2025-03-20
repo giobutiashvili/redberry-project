@@ -28,6 +28,7 @@
         </ul>
         <div class="d-flex justify-content-end mt-3">
           <button
+            @click="confirmSelected('department')"
             class="btn-status d-flex gap-3 justify-content-center align-items-center"
             style="width: 156px; height: 35px; border-radius: 20px"
             type="submit"
@@ -49,6 +50,7 @@
         </ul>
         <div class="d-flex justify-content-end mt-3">
           <button
+            @click="confirmSelected('priority')"
             class="btn-status d-flex gap-3 justify-content-center align-items-center"
             style="width: 156px; height: 35px; border-radius: 20px"
             type="submit"
@@ -72,6 +74,7 @@
         </ul>
         <div class="d-flex justify-content-end mt-3">
           <button
+            @click="confirmSelected('employee')"
             class="btn-status d-flex gap-3 justify-content-center align-items-center"
             style="width: 156px; height: 35px; border-radius: 20px"
             type="submit"
@@ -198,12 +201,14 @@
                     style="width: 31px; height: 31px; border-radius: 100px"
                   />
 
-                  <div>
+                  <div class="d-flex align-items-center gap-2">
                     <img
                       :src="commentsimg"
                       alt="comments"
                       class="comments-icon"
                     />
+
+                    <p>{{ task.total_comments }}</p>
                   </div>
                 </div>
               </div>
@@ -218,9 +223,11 @@
 <script setup>
 import httprequest from "../httprequests/HttpRequests";
 import { ref, onMounted } from "vue";
+
 import commentsimg from "../assets/Comments.png";
 
 const statuses = ref([]);
+
 const colors = ["#F7BC30", "#FB5607", "#FF006E", "#3A86FF"];
 const color = ["#FA4D4D", "#08A508", "#FFBE0B"];
 
@@ -280,6 +287,7 @@ const getDepartments = async () => {
     console.error(error);
   }
 };
+
 // დროპდაუნის გახსნა
 const toggleDropdown = (menu) => {
   // ყველა dropdown დახურეთ და მხოლოდ ის გახსენით, რომელზეც დააჭირეთ

@@ -181,16 +181,7 @@
               <div class="comments-section">
                 <div class="d-flex">
                   <p>კომენტარები</p>
-                  <p
-                    class="text-center ms-2"
-                    style="
-                      width: 30px;
-                      height: 22px;
-                      color: #ffffff;
-                      border-radius: 30px;
-                      background-color: #8338ec;
-                    "
-                  >
+                  <p class="text-center textcenter ms-2">
                     {{ comments.length }}
                   </p>
                 </div>
@@ -225,7 +216,7 @@
 
 <script setup>
 import httprequest from "../httprequests/HttpRequests";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useRoute } from "vue-router";
 import user from "../assets/user.png";
 import time from "../assets/time.png";
@@ -242,6 +233,19 @@ const taskid = route.params.id;
 
 const colors = ["#F7BC30", "#FB5607", "#FF006E", "#3A86FF"];
 const color = ["#FA4D4D", "#08A508", "#FFBE0B"];
+
+// სტატუსის განახლების ფუნქცვია
+watch(selectedStatus, async (newStatus) => {
+  if (!newStatus) return;
+  try {
+    const response = await apiClient.put(`/tasks/${taskid}`, {
+      status_id: newStatus,
+    });
+    task.value = response.data;
+  } catch (error) {
+    console.log(error);
+  }
+});
 
 // კომენტარის გაგზავნის ფუნქცია
 const submitForm = async () => {
@@ -350,6 +354,16 @@ onMounted(async () => {
   flex-direction: column;
   align-items: flex-start;
   gap: 18px;
+}
+.textcenter {
+  width: 30px;
+  height: 22px;
+  color: #ffffff;
+  border-radius: 30px;
+  background-color: #8338ec;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .card-details {
   margin-top: 40px;
