@@ -5,9 +5,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.min.js';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { faAngleDown, faCheck} from '@fortawesome/free-solid-svg-icons';;
+import { faAngleDown,faAngleUp,faCheck} from '@fortawesome/free-solid-svg-icons';;
 
-library.add(faAngleDown,faCheck,);
+library.add(faAngleDown,faCheck,faAngleUp);
 const app = createApp(App);
 
 app.use(router);

@@ -179,7 +179,21 @@
 
             <div>
               <div class="comments-section">
-                <h4>კომენტარები {{ comments.length }}</h4>
+                <div class="d-flex">
+                  <p>კომენტარები</p>
+                  <p
+                    class="text-center ms-2"
+                    style="
+                      width: 30px;
+                      height: 22px;
+                      color: #ffffff;
+                      border-radius: 30px;
+                      background-color: #8338ec;
+                    "
+                  >
+                    {{ comments.length }}
+                  </p>
+                </div>
 
                 <div
                   v-for="comment in comments"

@@ -14,8 +14,12 @@
           v-model="selectedName"
           required
         />
-        <p class="input-option">მინიმუმ ორი სიმბოლო</p>
-        <p class="input-option">მაქსიმუმ 255 სიმბოლო</p>
+        <p class="input-option" :style="{ color: getColor(selectedName) }">
+          მინიმუმ ორი სიმბოლო
+        </p>
+        <p class="input-option" :style="{ color: getColor(selectedName) }">
+          მაქსიმუმ 255 სიმბოლო
+        </p>
       </div>
       <div class="col-md-5">
         <label class="form-label">დეპარტამენტი*</label>
@@ -47,13 +51,23 @@
           rows="3"
           v-model="selectedDescription"
         ></textarea>
-        <p class="input-option">მინიმუმ ორი სიმბოლო</p>
-        <p class="input-option">მაქსიმუმ 255 სიმბოლო</p>
+        <p
+          class="input-option"
+          :style="{ color: getColor(selectedDescription) }"
+        >
+          მინიმუმ ორი სიმბოლო
+        </p>
+        <p
+          class="input-option"
+          :style="{ color: getColor(selectedDescription) }"
+        >
+          მაქსიმუმ 255 სიმბოლო
+        </p>
       </div>
       <div class="col-md-5">
         <label class="form-label">პასუხისმგებელი თანამშრომელი*</label>
 
-        <div class="custom-select">
+        <div class="custom-select" style="width: 270px">
           <div
             class="form-control d-flex align-items-center justify-content-between"
             @click="showDropdownEmploy = !showDropdownEmploy"
@@ -72,7 +86,10 @@
               <p class="mb-0">{{ selectedEmployeeFullName }}</p>
             </div>
 
-            <font-awesome-icon :icon="['fas', 'angle-down']" />
+            <font-awesome-icon
+              :icon="['fas', 'angle-down']"
+              :class="{ 'rotate-180': showDropdownEmploy }"
+            />
           </div>
 
           <div v-if="showDropdownEmploy" class="dropdown">
@@ -110,7 +127,10 @@
               }}
             </div>
 
-            <font-awesome-icon :icon="['fas', 'angle-down']" />
+            <font-awesome-icon
+              :icon="['fas', 'angle-down']"
+              :class="{ 'rotate-180': showDropdown }"
+            />
           </div>
 
           <div v-if="showDropdown" class="dropdown">
@@ -151,7 +171,9 @@
     </div>
 
     <div class="text-end">
-      <button type="submit" class="create-task">დავალების შექმნა</button>
+      <button type="submit" :disabled="!isValidInput" class="create-task">
+        დავალების შექმნა
+      </button>
     </div>
   </form>
 </template>
@@ -214,12 +236,10 @@ const getEmployees = async () => {
     console.log(error);
   }
 };
-
 const selectemployee = (employee) => {
   selectedemployees.value = employee.id;
   showDropdownEmploy.value = false;
 };
-
 const selectedEmployeeFullName = computed(() => {
   const employee = employees.value.find(
     (p) => p.id === selectedemployees.value
@@ -298,6 +318,17 @@ onMounted(() => {
   getEmployees();
   getAllTasks();
 });
+const getColor = (text) => {
+  return text.length >= 2 && text.length <= 255 ? "#08A508" : "#FA4D4D";
+};
+const isValidInput = computed(() => {
+  return (
+    selectedName.value.length >= 2 &&
+    selectedName.value.length <= 255 &&
+    selectedDescription.value.length >= 2 &&
+    selectedDescription.value.length <= 255
+  );
+});
 </script>
 <style>
 .form-container {
@@ -327,7 +358,10 @@ onMounted(() => {
   width: 18px;
   height: 16px;
 }
-
+.rotate-180 {
+  transform: rotate(180deg);
+  transition: transform 0.3s ease;
+}
 .dropdown {
   position: absolute;
   top: 100%;

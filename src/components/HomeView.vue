@@ -3,18 +3,83 @@
     <div>
       <h2 class="mt-5 mb-5 task">დავალებების გვერდი</h2>
     </div>
-    <div class="d-flex justify-content-between mb-3">
+    <div class="d-flex justify-content-between mb-3 position-relative">
       <ul class="d-flex me-auto mb-2 mb-lg-0">
-        <li class="mx-2">
+        <li class="mx-2" @click="toggleDropdown('department')">
           დეპარტამენტი <font-awesome-icon :icon="['fas', 'angle-down']" />
         </li>
-        <li class="mx-2">
+        <li class="mx-2" @click="toggleDropdown('priority')">
           პრიორიტეტი <font-awesome-icon :icon="['fas', 'angle-down']" />
         </li>
-        <li class="mx-2">
+        <li class="mx-2" @click="toggleDropdown('employee')">
           თანამშრომელი <font-awesome-icon :icon="['fas', 'angle-down']" />
         </li>
       </ul>
+      <div v-if="isDropdownOpen.department" class="dropdown-menu">
+        <ul class="d-flex flex-wrap" style="border: 0; gap: 22px">
+          <li
+            v-for="department in departments"
+            :key="department.id"
+            style="gap: 15px; display: flex"
+          >
+            <input type="checkbox" :id="'dep-' + department.id" />
+            <label :for="'dep-' + department.id">{{ department.name }}</label>
+          </li>
+        </ul>
+        <div class="d-flex justify-content-end mt-3">
+          <button
+            class="btn-status d-flex gap-3 justify-content-center align-items-center"
+            style="width: 156px; height: 35px; border-radius: 20px"
+            type="submit"
+          >
+            არჩევა
+          </button>
+        </div>
+      </div>
+      <div v-if="isDropdownOpen.priority" class="dropdown-menu">
+        <ul class="d-flex flex-column gap-3" style="border: 0">
+          <li
+            v-for="priority in priorities"
+            :key="priority.id"
+            style="gap: 15px; display: flex"
+          >
+            <input type="checkbox" :id="'pri-' + priority.id" />
+            <label :for="'pri-' + priority.id">{{ priority.name }}</label>
+          </li>
+        </ul>
+        <div class="d-flex justify-content-end mt-3">
+          <button
+            class="btn-status d-flex gap-3 justify-content-center align-items-center"
+            style="width: 156px; height: 35px; border-radius: 20px"
+            type="submit"
+          >
+            არჩევა
+          </button>
+        </div>
+      </div>
+      <div v-if="isDropdownOpen.employee" class="dropdown-menu">
+        <ul style="border: 0" class="flex-column gap-3">
+          <li
+            v-for="employee in employees"
+            :key="employee.id"
+            style="gap: 15px; display: flex"
+          >
+            <input type="checkbox" :id="'emp-' + employee.id" />
+            <label :for="'emp-' + employee.id">
+              {{ employee.name }} {{ employee.surname }}
+            </label>
+          </li>
+        </ul>
+        <div class="d-flex justify-content-end mt-3">
+          <button
+            class="btn-status d-flex gap-3 justify-content-center align-items-center"
+            style="width: 156px; height: 35px; border-radius: 20px"
+            type="submit"
+          >
+            არჩევა
+          </button>
+        </div>
+      </div>
     </div>
   </main>
 
@@ -184,8 +249,16 @@ const getStatuses = async () => {
     console.error(error);
   }
 };
-// კომენტარების მიღება
-
+// თანამშრომლების მიღება მიღება
+const employees = ref([]);
+const getEmployees = async () => {
+  try {
+    const response = await httprequest.getEmployees();
+    employees.value = response.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
 // პრიორიტეტების request-ი
 const priorities = ref([]);
 const getPriorities = async () => {
@@ -207,10 +280,25 @@ const getDepartments = async () => {
     console.error(error);
   }
 };
+// დროპდაუნის გახსნა
+const toggleDropdown = (menu) => {
+  // ყველა dropdown დახურეთ და მხოლოდ ის გახსენით, რომელზეც დააჭირეთ
+  Object.keys(isDropdownOpen.value).forEach((key) => {
+    if (key === menu) {
+      isDropdownOpen.value[key] = !isDropdownOpen.value[key];
+    } else {
+      isDropdownOpen.value[key] = false;
+    }
+  });
+};
+const isDropdownOpen = ref({
+  department: false,
+  priority: false,
+  employee: false,
+});
 
 // ყველა  task
 const tasks = ref([]);
-
 const getAllTasks = async () => {
   try {
     const response = await httprequest.getAllTasks();
@@ -224,6 +312,7 @@ const getAllTasks = async () => {
 onMounted(() => {
   getAllTasks();
   getStatuses();
+  getEmployees();
   getPriorities();
   getDepartments();
 });
@@ -305,7 +394,18 @@ p {
   color: white;
   margin-left: 10px;
 }
-
+.dropdown-menu {
+  display: block;
+  position: absolute;
+  width: 519px;
+  top: 50px;
+  background: white;
+  border: 0.5px solid #8338ec;
+  padding: 10px;
+  min-width: 150px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
 .avatar {
   width: 31px;
   height: 31px;

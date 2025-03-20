@@ -1,5 +1,5 @@
 import apiClient from "../components/ApiClient";
-import task from "../components/taskDetail.vue"
+
 
 class HttpRequest {
     getStatuses(){
