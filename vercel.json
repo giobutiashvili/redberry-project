@@ -1,8 +1,0 @@
-{
-  "builds": [
-    {
-      "src": "src/**/*.{js,vue,ts}",
-      "use": "@vercel/node"
-    }
-  ]
-}
