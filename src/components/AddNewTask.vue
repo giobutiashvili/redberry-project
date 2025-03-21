@@ -301,23 +301,9 @@ const selectDepartment = (department) => {
   showDropdownDepartment.value = false;
 };
 
-// ყველა task-ის წამოღება
-const tasks = ref([]);
-const getAllTasks = async () => {
-  try {
-    const response = await httprequest.getAllTasks();
-    tasks.value = response.data;
-    console.log(tasks.value);
-  } catch (error) {
-    console.log(error);
-  }
-};
-
 // submitform
-
 const selectedName = ref("");
 const selectedDescription = ref("");
-
 const selectedPrioritie = ref("");
 const selectedStatuse = ref("");
 const selectedTime = ref("");
@@ -334,6 +320,7 @@ const submitForm = async () => {
   };
   try {
     const response = await apiClient.post("/tasks", requestData);
+
     console.log(response.data);
     clearForm();
   } catch (error) {
@@ -355,7 +342,6 @@ onMounted(() => {
   getPriorities();
   getDepartments();
   getEmployees();
-  getAllTasks();
 });
 
 const getColor = (text) => {

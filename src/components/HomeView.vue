@@ -310,7 +310,10 @@ const tasks = ref([]);
 const getAllTasks = async () => {
   try {
     const response = await httprequest.getAllTasks();
-    tasks.value = response.data;
+    tasks.value = response.data.sort(
+      (b, a) => new Date(b.due_date) - new Date(a.due_date)
+    );
+
     console.log(tasks.value);
   } catch (error) {
     console.error(error);
