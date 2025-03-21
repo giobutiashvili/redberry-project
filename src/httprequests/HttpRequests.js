@@ -1,4 +1,4 @@
-import apiClient from "../components/ApiClient";
+import apiClient from "../components/apiClient";
 
 
 class HttpRequest {
