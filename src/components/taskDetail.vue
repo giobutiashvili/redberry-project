@@ -221,7 +221,7 @@ import { useRoute } from "vue-router";
 import user from "../assets/user.png";
 import time from "../assets/time.png";
 import statusi from "../assets/statusi.png";
-import apiClient from "./apiClient";
+import apiClient from "@/components/apiClient";
 
 const statuses = ref([]);
 const selectedStatus = ref(null);

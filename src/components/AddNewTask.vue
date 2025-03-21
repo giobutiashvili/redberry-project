@@ -209,7 +209,7 @@
 
 <script setup>
 import httprequest from "../httprequests/HttpRequests";
-import apiClient from "./ApiClient";
+import apiClient from "@/components/apiClient";
 import { ref, onMounted, computed } from "vue";
 
 //  სტატუსების get

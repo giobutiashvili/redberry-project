@@ -169,7 +169,7 @@
 </template>
 
 <script setup>
-import apiClient from "./apiClient";
+import apiClient from "@/components/apiClient";
 import httprequest from "../httprequests/HttpRequests";
 import { onMounted, ref, computed } from "vue";
 import defaultImage from "@/assets/photoframe.png";
