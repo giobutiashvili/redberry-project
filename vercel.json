@@ -1,10 +1,8 @@
 {
-  "version": 2,
   "builds": [
-    { "src": "src/**/*.vue", "use": "@vercel/vue" },
-    { "src": "package.json", "use": "@vercel/node" }
-  ],
-  "routes": [
-    { "src": "/(.*)", "dest": "/src/$1" }
+    {
+      "src": "src/**/*.{js,vue,ts}",
+      "use": "@vercel/node"
+    }
   ]
 }
